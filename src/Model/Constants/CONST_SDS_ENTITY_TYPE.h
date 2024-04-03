@@ -1,0 +1,20 @@
+#pragma once
+#ifndef CONST_SDS_ENTITY_TYPE_H
+#define CONST_SDS_ENTITY_TYPE_H
+
+enum SDS_TYPE
+{
+	NONE,
+	BRUTE_FORCE,
+	SPATIAL_HASH_GRID,
+	QUAD_TREE
+};
+
+enum ENTITY_TYPE
+{
+	PARTICLE,
+	BOID,
+	SHAPE
+};
+
+#endif 
