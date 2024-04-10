@@ -4,7 +4,7 @@
 
 #include <vector>
 #include <iostream>
-#include "./Particle.h"
+#include "./SpatialEntities/Particles/Particle.h"
 #include "../../View/Graphics.h"
 #include "../DataStructures/ISpatialDataStructure.h"
 #include "../DataStructures/SpatialHashGrid/SpatialHashGrid.h"
@@ -16,23 +16,22 @@ using ISDS = ISpatialDataStructure;
 
 struct World
 {
+    // [TODO] :: Needs cleanup and sorting of components:
     int m_itemIDCounter;
 	float m_G;
 
     Vec2f pushForce;
 
-
-    Particle* m_selectedParticle;
+    ISpatialEntity* m_selectedParticle;
     BoundingBox2D m_selectedSDSComponent;
 
     ISDS* m_SDS;
     ENTITY_TYPE m_entityType;
 
-
     BoundingBox2D m_worldBoundingBox;
     Vec2i m_worldSize;
-    std::vector<Particle*> m_particles;
-    std::vector<std::pair<Particle*, Particle*>> m_collidingParticle;
+    std::vector<ISpatialEntity*> m_entities;
+    std::vector<std::pair<ISpatialEntity*, ISpatialEntity*>> m_collidingParticle;
     std::vector<Vec2f> m_forces;
     std::vector<float> m_torques;
 
@@ -43,8 +42,6 @@ struct World
 
     // [TODO] :: Clean up is required here! This is a fucking mess
     // Spatial Data Structures:
-    void SetCurrEntityType();
-    ENTITY_TYPE GetCurrEntityType();
     SDS_TYPE GetCurrSDSType();
     ISDS* GetCurrSDS();
     ISDS* SetCurrSDS(const SDS_TYPE _sdsType);
@@ -53,24 +50,37 @@ struct World
     void SetSDSComponent(const BoundingBox2D _bb);
     BoundingBox2D* GetSDSComponent();
 
-    // Particles / Entities:
+    //////////////////////////
+    //   ALL ENTITY TYPES   //
+    //////////////////////////
+    ENTITY_TYPE GetCurrEntityType();
     int  GetNumParticles();
     Vec2i GetWorldSize();
-    std::vector<Particle*>& GetParticles();
+    std::vector<ISpatialEntity*>& GetEntities();
+    ISpatialEntity* GetSelectedEntity();
 
-    // being tested:
-    void SetSelectedEntity(Particle* _particle);
-    Particle* GetSelectedEntity();
+    void SetSelectedEntity(ISpatialEntity* _particle);
 
     void AddEntity();
-    void AddParticles();
-    void HandleCollision();
-    void CheckIfHitBoundary(Particle* _particle);
-    void AddForce(const Vec2f& _force);
-    void AddTorque(float _torque);
     void Update(float _dt);
 
 
+
+    //////////////////
+    //   PARTICLE   //
+    //////////////////
+    void AddParticle();
+    void CheckIfHitBoundary(Particle* _particle);
+    void HandleCollision();
+    void AddForce(const Vec2f& _force);
+    void AddTorque(float _torque);
+
+
+
+    ///////////////////
+    //      BOID     //
+    ///////////////////
+    void AddBoid();
 };
 
 #endif

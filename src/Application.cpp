@@ -21,7 +21,7 @@ void Application::Setup()
     m_world             = new World(9.8, { 0, 0 }, { 1000, 1000 });
     m_transformedView   = new TransformedView({ Graphics::i_Width(), Graphics::i_Height() }, m_world->GetWorldSize());
     m_controller        = new Controller(m_world, m_transformedView); // Might encounter errors with no default constructor so prepare for that... 
-    m_world->AddParticles();
+    m_world->AddParticle();
 }
 
 void Application::Input()
@@ -57,7 +57,7 @@ void Application::Update()
     // Handle elapsed Time:
     std::string elapsedTime = std::to_string(elapsedT);
 
-    //Graphics::RenderFont(elapsedTime, { 10, 10 }, { 200, 120 }, 12);
+    Graphics::RenderFont(elapsedTime, { 10, 10 }, { 200, 120 }, 12);
 
 
     Application::Render();
@@ -66,54 +66,76 @@ void Application::Update()
 void Application::Render()
 {
     // [TODO] CLEAN THIS UP
-    std::vector<Particle*>& particles = m_world->GetParticles();
-
-    // 1. Drawing Entities and anything related to them:
-    if (!particles.empty())
+    // Potentially add this to a generalized Graphics Rendering class:
+    std::vector<ISpatialEntity*>& entities = m_world->GetEntities();
+    
+    // [1]
+    if (!entities.empty())
     {
-        // [TODO] :: Add a check to make sure only the particles in view are drawn...
-        // 1.1: Draw each particle:
-        for (auto particle : particles)
+        // [1.1]
+        for (auto& entity : entities)
         {
-            m_transformedView->DrawFillCircle(particle->m_pos.x, particle->m_pos.y, particle->m_radius, particle->m_color);
 
-            if (IsDebugModeActive())
+            // [1.2]
+            switch (entity->GetEntityType())
             {
-                // 1.2: Draw each of the particle bounding boxes:
-                int bbMinX = particle->m_bb.m_minX;
-                int bbMinY = particle->m_bb.m_minY;
-                int bbMaxX = particle->m_bb.m_maxX;
-                int bbMaxY = particle->m_bb.m_maxY;
 
-                m_transformedView->DrawBoundingBox2D(bbMinX, bbMinY, bbMaxX, bbMaxY, ((particle->m_bb.m_isBBColliding) ? 0xFF7722FF : 0x88FF6699));
+                // [1.3]
+                case ENTITY_TYPE::PARTICLE:
+
+                    Particle* particle = (Particle*)entity;
+
+                    m_transformedView->DrawFillCircle(particle->m_pos, particle->m_radius, particle->m_color);
+
+                    if (IsDebugModeActive())
+                    {
+                        // 1.2: Draw each of the particle bounding boxes:
+                        const BoundingBox2D& particleBB = particle->m_bb;
+
+                        float bbMinX = particleBB.m_minX;
+                        float bbMinY = particleBB.m_minY;
+                        float bbMaxX = particleBB.m_maxX;
+                        float bbMaxY = particleBB.m_maxY;
+
+                        m_transformedView->DrawBoundingBox2D(bbMinX, bbMinY, bbMaxX, bbMaxY, ((particleBB.m_isOnlyOverlapping) ? 0xFF00FF55 : (particleBB.m_isOnlyContained) ? 0xFF00D5FF : 0x889966FF));
+
+                        // Green  :: 0xFF00FF55
+                        // Yellow :: 0xFF00D5FF
+                        // Pink   :: 0xFF9966FF
+
+                    }
+
+                    break;
+
+
+
             }
+
+
         }
 
-        // 1.2: Perform nearest neighbor query for a given entity:
-        // [TODO] :: This obviously needs to be incorporated into the for loop...
-        auto locatedParticles = m_world->GetCurrSDS()->QueryNearestNeighbour(m_world->m_particles[0]);
 
-        for (const Particle* particle : locatedParticles)
+        // [TODO] :: This obviously needs to be incorporated into the for loop...
+        auto locatedEntities = m_world->GetCurrSDS()->QueryNearestNeighbour(m_world->m_entities[0]);
+
+        for (auto& entity : locatedEntities)
         {
-            if (particle != nullptr)
+            if (entity->GetEntityType() == ENTITY_TYPE::PARTICLE)
             {
-                m_transformedView->DrawFillCircle(particle->m_pos.x, particle->m_pos.y, particle->m_radius, 0x88FF7711);
+                Particle* particle = (Particle*)entity;
+
+                if (particle != nullptr)
+                {
+                    m_transformedView->DrawFillCircle(particle->m_pos, particle->m_radius, 0x88FF7711);
+                }
             }
         }
     }
 
-    // 2. Drawing the SDS and related components:
+    // [5] Draw the current SDS:
     m_world->GetCurrSDS()->DrawSDS(m_transformedView);
 
-    // 2.1:
-    BoundingBox2D* selectedSDSComponent = m_world->GetSDSComponent();
-    if (selectedSDSComponent != nullptr)
-    {
-        m_transformedView->DrawBoundingBox2D(selectedSDSComponent->m_minX, selectedSDSComponent->m_minY, selectedSDSComponent->m_maxX, selectedSDSComponent->m_maxY, 0xFFBB66FF);
-    }
-
-
-    // 3. Drawing the Bounded Region surrounding the world:
+    // [6] Draw the World's bounded region:
     const BoundingBox2D& worldBB = m_world->m_worldBoundingBox;
 
     int worldBBMinX = worldBB.m_minX;
@@ -122,8 +144,6 @@ void Application::Render()
     int worldBBMaxY = worldBB.m_maxY;
 
     m_transformedView->DrawBoundingBox2D(worldBBMinX, worldBBMinY, worldBBMaxX, worldBBMaxY, 0xFF66FFCC);
-
-
 
     Graphics::RenderFrame();
 }

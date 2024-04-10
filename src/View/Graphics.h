@@ -3,7 +3,7 @@
 #define GRAPHICS_H
 
 #include "../../lib/SDL2_gfx/SDL2_gfxPrimitives.h"
-#include "../Model/Util/Vec2.h"
+#include "../Model/Util/Vec2D.h"
 #include "../Model/Util/BoundingBox.h"
 #include "Font.h"
 #include <SDL.h>

@@ -1,47 +1,48 @@
 #include "./Particle.h"
-#include "../../View/Graphics.h"
 
-Particle::Particle(int _radius, float _x, float _y, int _ID, Uint32 _color) : m_mass(1.0), m_friction(0.5), m_restitution(0.5), m_isColliding(false) 
+Particle::Particle(int _radius, float _x, float _y, int _ID, Uint32 _color) : m_mass(1.0), m_friction(0.5), m_restitution(0.5)
 {
-    m_color = _color;
-    m_ID = _ID;
-    m_radius = _radius;
-    m_pos.x = _x;
-    m_pos.y = _y;
-    m_vel = Vec2f(0, 0);
-    m_acc = Vec2f(0, 0);
-    m_rotation = 0.0;
-    m_angularVel = 0.0;
-    m_angularAcc = 0.0;
-    m_sumForces = Vec2f(0, 0);
-    m_sumTorque = 0.0;
-    m_invMass = (m_mass > 0.0) ? 1.0 / m_mass : 0.0;
-    m_I = Particle::GetMomentOfInertia() * m_mass;
-    m_invI = (m_I > 0.0) ? 1.0 / m_I : 0.0;
-    m_bb = BoundingBox2D(_radius, _x, _y);
+    m_et            = ENTITY_TYPE::PARTICLE;
+    m_color         = _color;
+    m_ID            = _ID;
+    m_radius        = _radius;
+    m_pos.x         = _x;
+    m_pos.y         = _y;
+    m_vel           = Vec2f(0, 0);
+    m_acc           = Vec2f(0, 0);
+    m_rotation      = 0.0;
+    m_angularVel    = 0.0;
+    m_angularAcc    = 0.0;
+    m_sumForces     = Vec2f(0, 0);
+    m_sumTorque     = 0.0;
+    m_invMass       = (m_mass > 0.0) ? 1.0 / m_mass : 0.0;
+    m_I             = Particle::GetMomentOfInertia() * m_mass;
+    m_invI          = (m_I > 0.0) ? 1.0 / m_I : 0.0;
+    m_bb            = BoundingBox2D(_radius, _x, _y);
 }
 
 Particle::Particle(int _radius, float _x, float _y, int _ID, Uint32 _color, int _mass, int _friction, int _restitution)
 {
-    m_color = _color;
-    m_ID = _ID;
-    m_radius = _radius;
-    m_pos.x = _x;
-    m_pos.y = _y;
-    m_mass = _mass;
-    m_friction = _friction;
-    m_restitution = _restitution;
-    m_vel = Vec2f(0, 0);
-    m_acc = Vec2f(0, 0);
-    m_rotation = 0.0;
-    m_angularVel = 0.0;
-    m_angularAcc = 0.0;
-    m_sumForces = Vec2f(0, 0);
-    m_sumTorque = 0.0;
-    m_invMass = (m_mass > 0.0) ? 1.0 / m_mass : 0.0;
-    m_I = Particle::GetMomentOfInertia() * m_mass;
-    m_invI = (m_I > 0.0) ? 1.0 / m_I : 0.0;
-    m_bb = BoundingBox2D(_radius, _x, _y);
+    m_et            = ENTITY_TYPE::PARTICLE;
+    m_color         = _color;
+    m_ID            = _ID;
+    m_radius        = _radius;
+    m_pos.x         = _x;
+    m_pos.y         = _y;
+    m_mass          = _mass;
+    m_friction      = _friction;
+    m_restitution   = _restitution;
+    m_vel           = Vec2f(0, 0);
+    m_acc           = Vec2f(0, 0);
+    m_rotation      = 0.0;
+    m_angularVel    = 0.0;
+    m_angularAcc    = 0.0;
+    m_sumForces     = Vec2f(0, 0);
+    m_sumTorque     = 0.0;
+    m_invMass       = (m_mass > 0.0) ? 1.0 / m_mass : 0.0;
+    m_I             = Particle::GetMomentOfInertia() * m_mass;
+    m_invI          = (m_I > 0.0) ? 1.0 / m_I : 0.0;
+    m_bb            = BoundingBox2D(_radius, _x, _y);
 }
 
 // 01. Check to see whether or not a point (namely the mouse) is inside a circle:
@@ -76,7 +77,7 @@ void  Particle::AddVelocityImpulse(const Vec2f& j)  { m_vel += j * m_invMass; }
 void  Particle::AddAngularImpulse(const Vec2f& j, const Vec2f& r)
 {
     m_vel += j * m_invMass;
-    m_angularVel += r.Cross(j) * m_invI;
+    m_angularVel += r.CrossProd(j) * m_invI;
 }
 
 // 04. Basic Linear Integration:

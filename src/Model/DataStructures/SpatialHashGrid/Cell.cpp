@@ -11,26 +11,26 @@
 
 
 
-Cell::Cell(int _cellID) : m_cellGridIndex(-1), m_particlesInCell(std::vector<Particle*>())
+Cell::Cell(int _cellID) : m_cellGridIndex(-1), m_entitiesInCell(std::vector<ISpatialEntity*>())
 {
 	m_cellID = _cellID;
 }
 
-std::vector<Particle*> Cell::GetItems()
+std::vector<ISpatialEntity*> Cell::GetItems()
 {
-	return m_particlesInCell;
+	return m_entitiesInCell;
 }
 
-void Cell::Insert(Particle* _newSHGItem)
+void Cell::Insert(ISpatialEntity* _newSHGItem)
 {
-	_newSHGItem->m_indexPosInCell = m_particlesInCell.size();
+	_newSHGItem->m_indexPosInCell = m_entitiesInCell.size();
 
-	m_particlesInCell.push_back(_newSHGItem);
+	m_entitiesInCell.push_back(_newSHGItem);
 }
 
 // Remove utilizes the good ol'Swap-Pop technique
 // Have to test this further, make sure it doesn't break
-void Cell::Remove(Particle* _remSHGItem)
+void Cell::Remove(ISpatialEntity* _remSHGItem)
 {
 	/*auto it = std::find(m_circlesPtr.begin(), m_circlesPtr.end(), remCircle);
 
@@ -40,11 +40,11 @@ void Cell::Remove(Particle* _remSHGItem)
 	}*/
 
 
-	if (m_particlesInCell.size() > 1) {
-		std::iter_swap(m_particlesInCell.begin() + _remSHGItem->m_indexPosInCell, m_particlesInCell.end() - 1);
-		m_particlesInCell.pop_back();
+	if (m_entitiesInCell.size() > 1) {
+		std::iter_swap(m_entitiesInCell.begin() + _remSHGItem->m_indexPosInCell, m_entitiesInCell.end() - 1);
+		m_entitiesInCell.pop_back();
 	}
 	else {
-		m_particlesInCell.clear();
+		m_entitiesInCell.clear();
 	}
 }

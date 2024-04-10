@@ -2,7 +2,7 @@
 #ifndef SPATIAL_HASH_GRID_ITEM_H
 #define SPATIAL_HASH_GRID_ITEM_H
 
-#include "../../World/Particle.h"
+#include "../../World/SpatialEntities/Particles/Particle.h"	// [TODO] :: CHANGE TO PARENT TYPE
 #include "../ISpatialDataStructureItem.h"
 
 

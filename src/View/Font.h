@@ -4,7 +4,7 @@
 
 #include <SDL_ttf.h>
 #include <iostream>
-#include "../Model/Util/Vec2.h"
+#include "../Model/Util/Vec2D.h"
 #include "../Application/FileHandler.h"
 #include "../Application/ErrorHandler.h"
 

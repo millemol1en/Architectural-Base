@@ -158,10 +158,11 @@
     <ClInclude Include="src\Model\DataStructures\SpatialHashGrid\SpatialHashGrid.h" />
     <ClInclude Include="src\Application\DiscriminatedUnion\Result.h" />
     <ClInclude Include="src\Model\Physics\Forces.h" />
-    <ClInclude Include="src\Model\Util\Vec2.h" />
     <ClInclude Include="src\Model\Util\BoundingBox.h" />
     <ClInclude Include="src\Model\Util\Vec2D.h" />
-    <ClInclude Include="src\Model\World\Particle.h" />
+    <ClInclude Include="src\Model\World\SpatialEntities\Particles\Particle.h" />
+    <ClInclude Include="src\Model\World\SpatialEntities\Boids\Boid.h" />
+    <ClInclude Include="src\Model\World\SpatialEntities\ISpatialEntity.h" />
     <ClInclude Include="src\Model\World\World.h" />
     <ClInclude Include="src\View\Font.h" />
     <ClInclude Include="src\View\Graphics.h" />
@@ -182,9 +183,9 @@
     <ClCompile Include="src\Model\DataStructures\SpatialHashGrid\Cell.cpp" />
     <ClCompile Include="src\Model\DataStructures\SpatialHashGrid\SpatialHashGridItem.cpp" />
     <ClCompile Include="src\Model\DataStructures\SpatialHashGrid\SpatialHashGrid.cpp" />
-    <ClCompile Include="src\Model\Util\Vec2.cpp" />
     <ClCompile Include="src\Model\Util\BoundingBox.cpp" />
-    <ClCompile Include="src\Model\World\Particle.cpp" />
+    <ClCompile Include="src\Model\World\SpatialEntities\Particles\Particle.cpp" />
+    <ClCompile Include="src\Model\World\SpatialEntities\Boids\Boid.cpp" />
     <ClCompile Include="src\Model\World\World.cpp" />
     <ClCompile Include="src\View\Font.cpp" />
     <ClCompile Include="src\View\Graphics.cpp" />

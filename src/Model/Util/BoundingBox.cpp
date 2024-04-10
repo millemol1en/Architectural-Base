@@ -2,18 +2,7 @@
 #include <iostream>
 
 
-//
-// 2 Dimensional Bounding Box:
-//      -> OnlyOverlaps :: 
-//      -> 
-// 
-// 
-// 
-// 
-// 
-//
-
-// Bounding Box created from Top-Left and Bottom-Right integer vectors:
+// [0] Bounding Box created from Top-Left and Bottom-Right integer vectors:
 BoundingBox2D::BoundingBox2D(Vec2i _topLeft, Vec2i _bottomRight) : m_isBBColliding(false), m_isOnlyOverlapping(false), m_isOnlyContained(false)
 {
     m_minX = _topLeft.x;
@@ -22,7 +11,7 @@ BoundingBox2D::BoundingBox2D(Vec2i _topLeft, Vec2i _bottomRight) : m_isBBCollidi
     m_maxY = _bottomRight.y;
 }
 
-// Bounding Box created from Top-Left and Bottom-Right float vectors
+// [1] Bounding Box created from Top-Left and Bottom-Right float vectors
 BoundingBox2D::BoundingBox2D(Vec2f _topLeft, Vec2f _bottomRight) : m_isBBColliding(false), m_isOnlyOverlapping(false), m_isOnlyContained(false)
 {
     m_minX = _topLeft.x;
@@ -31,23 +20,23 @@ BoundingBox2D::BoundingBox2D(Vec2f _topLeft, Vec2f _bottomRight) : m_isBBCollidi
     m_maxY = _bottomRight.y;
 }
 
-// Bounding Box for Circles:
+// [2] Bounding Box specific for Circles:
 BoundingBox2D::BoundingBox2D(int _radius, float _x, float _y) : m_isBBColliding(false), m_isOnlyOverlapping(false), m_isOnlyContained(false)
 {
     InitBoundingBox2D(_radius, _x, _y);
 }
 
-// Bounding Box for Screen / World: [TODO] --- PERHAPS REMOVE THIS / CHANGE IT
+// [3] Bounding Box for Rectangles:
 BoundingBox2D::BoundingBox2D(float _startX, float _startY, float _width, float _height) : m_isBBColliding(false), m_isOnlyOverlapping(false), m_isOnlyContained(false)
 {
     InitBoundingBox2D(_startX, _startY, _width, _height);
 }
 
-// Check to see if 2 bounding boxes ONLY overlap and NOT contain one another - [TESTED]
+// [4] Check to see if 2 bounding boxes ONLY overlap and NOT contain one another - [TESTED]
 bool BoundingBox2D::OnlyOverlaps(const BoundingBox2D& other) const
 {
     return (
-        (m_minX < other.m_maxX && m_maxX > m_minX) &&
+        (m_minX < other.m_maxX && m_maxX > other.m_minX) &&
         (m_minY < other.m_maxY && m_maxY > other.m_minY) &&
         !this->OnlyContains(other) && !other.OnlyContains(*this)
         );
@@ -80,7 +69,6 @@ void BoundingBox2D::UpdateBoundingBox2D(float offsetX, float offsetY)
     m_minX += offsetX; m_maxX += offsetX;
     m_minY += offsetY; m_maxY += offsetY;
 }
-
 
 // [TODO] Clean this up --- currently it has TOO many methods
 void BoundingBox2D::InitBoundingBox2D(int radius, float _x, float _y)

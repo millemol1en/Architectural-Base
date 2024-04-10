@@ -19,12 +19,12 @@ void Keys::Keys_HandleKeyDown(const SDL_Event& event)
         {
             int numVisibleItems = 0;
 
-            auto& particlesRef = ptr_worldRef->GetParticles();
+            auto& particlesRef = ptr_worldRef->GetEntities();
 
             if (!particlesRef.empty())
             {
                 std::cout << "Passed 'nullptr' check\n";
-                for (auto p : particlesRef)
+                for (auto& p : particlesRef)
                 {
                     if (ptr_tvRef->IsBBVisible(p->m_bb))
                     {

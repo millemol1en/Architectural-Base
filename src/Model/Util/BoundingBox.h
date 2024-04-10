@@ -2,7 +2,7 @@
 #ifndef BOUNDINGBOX2D_H 
 #define BOUNDINGBOX2D_H
 
-#include "Vec2.h"
+#include "Vec2D.h"
 
 
 struct BoundingBox2D

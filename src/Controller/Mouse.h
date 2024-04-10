@@ -4,27 +4,15 @@
 
 #include "../View/TransformedView.h"
 #include "../Model/World/World.h"
-#include "../Model/World/Particle.h"
+#include "../Model/World/SpatialEntities/Particles/Particle.h"	// [TODO] :: CHANGE TO PARENT TYPE
 #include "../Model/Util/BoundingBox.h"
-#include "../Model/Util/Vec2.h"
+#include "../Model/Util/Vec2D.h"
 #include "SDL.h"
 #include <vector>
 #include <string> // Change this later!!!!
 
 struct Mouse
 {
-public:
-    TransformedView* ptr_tvRef;
-    World* ptr_worldRef;
-
-    bool m_isLeftMouseBtnDown = false;
-    bool m_isRightMouseBtnDown = false;
-
-    // TODO: If possible, make the constructor take the 'TransformedView' ptr_ref as 
-    //       all Handle methods require it.
-    Mouse();
-    ~Mouse() = default;
-
 protected:
     Vec2f m_startPan;
     Vec2f m_startZoom;
@@ -34,17 +22,29 @@ protected:
 
 
 public:
+    TransformedView* ptr_tvRef;
+    World* ptr_worldRef;
+
+    bool m_isLeftMouseBtnDown = false;
+    bool m_isRightMouseBtnDown = false;
+
+    Mouse();
+    ~Mouse() = default;
+
     BoundingBox2D queryBoundary;
 
     void UpdateMousePos();
-    void HandleMouseButtonUp(const SDL_Event& event, TransformedView* _ptr_tvRef);
-    void HandleMouseButtonDown(const SDL_Event& event, TransformedView* _ptr_tvRef);
-    void HandleMouseMotion(const SDL_Event& event, TransformedView* _ptr_tvRef);
-    void HandleMouseWheel(const SDL_Event& event, TransformedView* _ptr_tvRef);
+    void HandleMouseButtonUp(const SDL_Event& event);
+    void HandleMouseButtonDown(const SDL_Event& event);
+    void HandleMouseMotion(const SDL_Event& event);
+    void HandleMouseWheel(const SDL_Event& event);
 
     bool GetMouseWheel(const SDL_Event& event);
     Vec2i GetMousePos(const SDL_Event& event);
     Vec2f CalculateMouseOffset();
+
+    void Mouse_SetTVPtr(TransformedView* _ptr_tvRef);
+    void Mouse_SetWorldPtr(World* _worldPtr);
 };
 
 #endif

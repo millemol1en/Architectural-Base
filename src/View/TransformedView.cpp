@@ -116,11 +116,14 @@ const Vec2f& TransformedView::GetWorldScale() const
 Vec2i TransformedView::ConvertWorldToScreen(const Vec2f& _objWorldPosition) const
 {
 	Vec2f convertedPos = ((_objWorldPosition - m_worldOffset) * m_worldScale);
-	return { std::floor(convertedPos.x), std::floor(convertedPos.y) };
+	return convertedPos.Floor();
 }
 
 Vec2f TransformedView::ConvertScreenToWorld(const Vec2i& _objScreenPosition) const
 {
+	Vec2f objScreenPosFloat;
+	objScreenPosFloat.x = _objScreenPosition.x;
+
 	return (Vec2f(_objScreenPosition) / m_worldScale) + m_worldOffset;
 }
 
@@ -160,10 +163,10 @@ bool BoundingBox2D::OverlapsOrContains(const BoundingBox2D& other) const
 
 bool TransformedView::IsBBVisible(const BoundingBox2D& _objBB) const
 {
-	Vec2i objTL	= ConvertWorldToScreen({ _objBB.m_minX , _objBB.m_minY });
-	Vec2i objBR = ConvertWorldToScreen({ _objBB.m_maxX , _objBB.m_maxY });
+	Vec2i objTL	= ConvertWorldToScreen({ _objBB.m_minX, _objBB.m_minY });
+	Vec2i objBR = ConvertWorldToScreen({ _objBB.m_maxX, _objBB.m_maxY });
 
-	Vec2i size = { (_objBB.m_maxX * m_worldScale.x), (_objBB.m_maxY * m_worldScale.y) };
+	Vec2i size = { static_cast<int>(_objBB.m_maxX * m_worldScale.x), static_cast<int>(_objBB.m_maxY * m_worldScale.y) };
 
 	std::cout << "Object Bounding Box: " <<
 		"\n   -> Top Left   :: (" << objTL.x << ", " << objTL.y << ")" <<
@@ -178,34 +181,27 @@ bool TransformedView::IsBBVisible(const BoundingBox2D& _objBB) const
 		);
 }
 
-void TransformedView::DrawFillCircle(int _x, int _y, int _radius, Uint32 _color)
+void TransformedView::DrawFillCircle(const Vec2f& _pos, const float& _radius, Uint32 _color)
 {
-	Vec2i circlePos = { _x, _y };
-	Vec2f circleScreenPos = ConvertWorldToScreen(circlePos);
+	Vec2i circleScreenPos = ConvertWorldToScreen(_pos);
 
 	Graphics::DrawFillCircle(circleScreenPos.x, circleScreenPos.y, int32_t(_radius * m_worldScale.x), _color);
 }
 
-void TransformedView::DrawLine(int _x0, int _y0, int _x1, int _y1, Uint8 _thickness, Uint32 _color)
+void TransformedView::DrawLine(const Vec2f& _p0, const Vec2f& _p1, Uint8 _thickness, Uint32 _color)
 {
-	Vec2i p1 = { _x0, _y0 };
-	Vec2i p2 = { _x1, _y1 };
-	Vec2f p1Screen = ConvertWorldToScreen(p1);
-	Vec2f p2Screen = ConvertWorldToScreen(p2);
+	Vec2i p1Screen = ConvertWorldToScreen(_p0);
+	Vec2i p2Screen = ConvertWorldToScreen(_p1);
 
 	// [TODO] :: Handle thickness
-
 	Graphics::DrawLine(p1Screen.x, p1Screen.y, p2Screen.x, p2Screen.y, _thickness, _color);
 }
 
-void TransformedView::DrawBoundingBox2D(int _minX, int _minY, int _maxX, int _maxY, Uint32 _color)
+void TransformedView::DrawBoundingBox2D(float _minX, float _minY, float _maxX, float _maxY, Uint32 _color)
 {
-	Vec2i min = { _minX, _minY };
-	Vec2i max = { _maxX, _maxY };
-	Vec2f minScreen = ConvertWorldToScreen(min);
-	Vec2f maxScreen = ConvertWorldToScreen(max);
+	Vec2i minScreen = ConvertWorldToScreen({ _minX, _minY });
+	Vec2i maxScreen = ConvertWorldToScreen({ _maxX, _maxY });
 
 	// [TODO] :: Handle thickness
-
 	Graphics::DrawBoundingBox2D(minScreen.x, minScreen.y, maxScreen.x, maxScreen.y, 1, _color);
 }

@@ -24,10 +24,7 @@
     <ClInclude Include="src\Model\DataStructures\ISpatialDataStructure.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Model\World\Particle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Util\Vec2.h">
+    <ClInclude Include="src\Model\World\SpatialEntities\Particles\Particle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="lib\SDL2_gfx\SDL2_gfxPrimitives.h">
@@ -105,12 +102,15 @@
     <ClInclude Include="src\Application\ErrorHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Model\World\SpatialEntities\ISpatialEntity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model\World\SpatialEntities\Boids\Boid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Controller\Controller.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Util\Vec2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="lib\SDL2_gfx\SDL2_gfxPrimitives.c">
@@ -128,7 +128,7 @@
     <ClCompile Include="src\View\Graphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Model\World\Particle.cpp">
+    <ClCompile Include="src\Model\World\SpatialEntities\Particles\Particle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Controller\Mouse.cpp">
@@ -165,6 +165,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Controller\Keys.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Model\World\SpatialEntities\Boids\Boid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -3,11 +3,10 @@
 Controller::Controller(World* _worldPtr, TransformedView* _tvPtr) : m_isAppRunning(true), m_debugMode(false), m_devSnapShot(false)
 {
     ptr_worldRef = _worldPtr;
-    ptr_tvRef = _tvPtr;
+    ptr_tvRef    = _tvPtr;
 
-    // [TODO] :: Should they be parameters passed to the individual methods or actually assigned?
-    m_mouse.ptr_tvRef    = _tvPtr;
-    m_mouse.ptr_worldRef = _worldPtr;
+    m_mouse.Mouse_SetTVPtr(_tvPtr);
+    m_mouse.Mouse_SetWorldPtr(_worldPtr);
 
     m_key.Keys_SetTVPtr(_tvPtr);
     m_key.Keys_SetWorldPtr(_worldPtr);
@@ -32,19 +31,19 @@ void Controller::HandleInput()
             break;
 
         case SDL_MOUSEWHEEL:
-            m_mouse.HandleMouseWheel(event, ptr_tvRef);
+            m_mouse.HandleMouseWheel(event);
             break;
 
         case SDL_MOUSEMOTION:
-            m_mouse.HandleMouseMotion(event, ptr_tvRef);
+            m_mouse.HandleMouseMotion(event);
             break;
 
         case SDL_MOUSEBUTTONDOWN:
-            m_mouse.HandleMouseButtonDown(event, ptr_tvRef);
+            m_mouse.HandleMouseButtonDown(event);
             break;
 
         case SDL_MOUSEBUTTONUP:
-            m_mouse.HandleMouseButtonUp(event, ptr_tvRef);
+            m_mouse.HandleMouseButtonUp(event);
             break;
         }
 

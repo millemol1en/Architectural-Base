@@ -2,39 +2,19 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
-#include "../Util/BoundingBox.h"
+#include "../../../Util/BoundingBox.h"
+#include "../../../../View/Graphics.h"
+#include "../ISpatialEntity.h"
 #include <SDL.h>
 #include <cstdint>
 
-struct Particle {
-	// [TODO] Change the architecture to allow for different kinds of spatial entities:
-	int m_gridIndex;
-	int m_indexPosInCell;
-	int m_queryID;
-
-
-
-	
-	/////////////////////////////////////////////////
-	// PROPERTIES RELEVANT TO ALL SPATIAL ENTITIES //
-	/////////////////////////////////////////////////
-	int			  m_ID;
-	Vec2f		  m_pos;
-	BoundingBox2D m_bb;
-
-	bool m_isColliding;
-	bool m_showNeighbors;
-	
-	int m_queryRadius;
-	BoundingBox2D m_queryBoundary;
-
+struct Particle : public ISpatialEntity 
+{	
 	/////////////////////////////////////////////////////
 	// RELEVANT ONLY TO THE PARTICLES STRUCT - FOR NOW //
 	/////////////////////////////////////////////////////
 	int m_radius;
-	Vec2f m_vel;
-	Vec2f m_acc;
-
+	
 	Vec2f m_sumForces;
 	float m_sumTorque;
 
@@ -50,7 +30,7 @@ struct Particle {
 
 	Uint32 m_color;
 
-	Particle() = default;
+	Particle() = default;	// Remove this and make sure the other 2 constructors always have values for their attributes
 	Particle(int _radius, float _x, float _y, int _ID, Uint32 _color);
 	Particle(int _radius, float _x, float _y, int _ID, Uint32 _color, int _mass, int _friction, int _restitution);
 	~Particle() = default;

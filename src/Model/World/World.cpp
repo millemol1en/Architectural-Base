@@ -6,21 +6,17 @@ World::World(float _gravity, Vec2i _position, Vec2i _dimensions) : m_selectedPar
     m_worldBoundingBox = BoundingBox2D(float(_position.x), float(_position.y), float(_dimensions.x), float(_dimensions.y));
     m_worldSize = _dimensions;
 
-    // Switch-case to handle the different types of Spatial Data Structures:
     m_SDS = SetCurrSDS(SDS_TYPE::SPATIAL_HASH_GRID);
-
-    std::cout << "World constructor called\n";
 }
 
 
 World::~World()
 {
-    std::cout << "World destructor called\n";
     delete m_SDS;
 
-    for (auto& particle : m_particles)
+    for (auto& entity : m_entities)
     {
-        delete particle;
+        delete entity;
     }
 }
 
@@ -32,14 +28,16 @@ World::~World()
 
 void World::AddEntity()
 {
+
+
     
 }
 
-void World::AddParticles()
+void World::AddParticle()
 {
     // [TESTING / REMOVE LATER]
     Particle* mainParticle = new Particle(12, Graphics::f_Width() / 2, Graphics::f_Height() / 2, m_itemIDCounter++, 0xFFFFFFFF);
-    m_particles.push_back(mainParticle);
+    m_entities.push_back(mainParticle);
     m_SDS->Insert(mainParticle);
 
     for (int i = 0; i < 100; i++)
@@ -49,10 +47,9 @@ void World::AddParticles()
         Vec2f randPos = Graphics::RandomPositionGenerator(m_worldBoundingBox.m_maxX, m_worldBoundingBox.m_maxY);
 
         Particle* newParticle = new Particle(randRadius, randPos.x, randPos.y, m_itemIDCounter++, randColor);
-        m_particles.push_back(newParticle);
+        m_entities.push_back(newParticle);
         m_SDS->Insert(newParticle);
     }
-
 }
 
 void World::AddForce(const Vec2f& _force)
@@ -67,59 +64,59 @@ void World::AddTorque(float _torque)
 
 void World::Update(float _dt)
 {
-    if (!m_particles.empty())
+    if (!m_entities.empty())
     {
-        //this->SHG.FindNearestForAllCells();
-        // [TODO] Remove this and incorporate it with the loops above:
-        for (auto particle : m_particles)
+        for (auto& entity : m_entities)
         {
-            if (particle->m_ID == 0)
+            switch(entity->GetEntityType())
             {
-                particle->AddVelocityImpulse(pushForce);
+                case ENTITY_TYPE::PARTICLE:
+
+                    Particle* particle = (Particle*)entity;
+
+                    if (particle->m_ID == 0)
+                    {
+                        particle->AddVelocityImpulse(pushForce);
+                    }
+
+                    particle->m_bb.m_isOnlyOverlapping = false;
+                    particle->m_bb.m_isOnlyContained = false;
+
+                    Vec2f friction = Force::GenerateFrictionForce(particle, 4.337 * 50);
+                    particle->AddForce(friction);
+
+                    // May only need to be called if they were previously part of the collidingCircles vector list:
+                    particle->Update(_dt);
+                    CheckIfHitBoundary(particle);
+
+                    // Core process of re-inserting this into particles back into the SHG
+                    m_SDS->Update(particle);
+
+                    // Shift this over to another section
+                    // TESTING!
+                    if (particle->m_ID != m_entities[0]->m_ID)
+                    {
+                        if (m_entities[0]->m_bb.OnlyOverlaps(particle->m_bb))
+                        {
+                            m_entities[0]->m_bb.m_isOnlyOverlapping = true;
+                            particle->m_bb.m_isOnlyOverlapping = true;
+                        }
+                        else if (m_entities[0]->m_bb.OnlyContains(particle->m_bb) || particle->m_bb.OnlyContains(m_entities[0]->m_bb))
+                        {
+                            m_entities[0]->m_bb.m_isOnlyContained = true;
+                            particle->m_bb.m_isOnlyContained = true;
+                        }
+                    }
+
+                    break;
+
             }
-
-
-            // [TODO] Create a generalize "Reset" function to reset all the parameters
-            //        back to their default values - if required.
-            particle->m_bb.m_isOnlyOverlapping = false;
-            particle->m_bb.m_isOnlyContained = false;
-
-            Vec2f friction = Force::GenerateFrictionForce(particle, 4.337 * 50);
-            particle->AddForce(friction);
-
-            // May only need to be called if they were previously part of the collidingCircles vector list:
-            particle->Update(_dt);
-            CheckIfHitBoundary(particle);
-
-            // Core process of re-inserting this into particles back into the SHG
-            m_SDS->Update(particle);
-
-            // Shift this over to another section
-            // TESTING!
-            if (particle->m_ID != m_particles[0]->m_ID)
-            {
-                if (m_particles[0]->m_bb.OnlyOverlaps(particle->m_bb))
-                {
-                    m_particles[0]->m_bb.m_isOnlyOverlapping = true;
-                    particle->m_bb.m_isOnlyOverlapping = true;
-                }
-                else if (m_particles[0]->m_bb.OnlyContains(particle->m_bb) || particle->m_bb.OnlyContains(m_particles[0]->m_bb))
-                {
-                    m_particles[0]->m_bb.m_isOnlyContained = true;
-                    particle->m_bb.m_isOnlyContained = true;
-                }
-            }
-        }
+        }        
     }
 }
 
 void World::CheckIfHitBoundary(Particle* particle)
 {
-    // int LEFT, TOP, RIGHT, BOTTOM;
-
-    /*WorldToScreen(this->worldBoundingBox->minX, this->worldBoundingBox->minY, LEFT, TOP);
-    WorldToScreen(this->worldBoundingBox->maxX, this->worldBoundingBox->maxY, RIGHT, BOTTOM);*/
-
     if (particle->m_pos.x - particle->m_radius <= m_worldBoundingBox.m_minX) {
         particle->m_pos.x = particle->m_radius;
         particle->m_vel.x *= -0.9;
@@ -147,7 +144,7 @@ void World::HandleCollision()
 
 int World::GetNumParticles()
 {
-    return m_particles.size();
+    return m_entities.size();
 }
 
 Vec2i World::GetWorldSize()
@@ -155,17 +152,17 @@ Vec2i World::GetWorldSize()
     return m_worldSize;
 }
 
-std::vector<Particle*>& World::GetParticles()
+std::vector<ISpatialEntity*>& World::GetEntities()
 {
-    return m_particles;
+    return m_entities;
 }
 
-void World::SetSelectedEntity(Particle* _particle)
+void World::SetSelectedEntity(ISpatialEntity* _particle)
 {
     m_selectedParticle = _particle;
 }
 
-Particle* World::GetSelectedEntity()
+ISpatialEntity* World::GetSelectedEntity()
 {
     return m_selectedParticle;
 }
@@ -204,7 +201,6 @@ ISDS* World::SetCurrSDS(const SDS_TYPE _sdsType)
 
 ISDS*       World::GetCurrSDS()         { return m_SDS;                 }
 SDS_TYPE    World::GetCurrSDSType()     { return m_SDS->GetSDSType();   }
-ENTITY_TYPE World::GetCurrEntityType()  { return m_entityType;          }
 
 
 BoundingBox2D* World::GetSDSComponent() { return &m_selectedSDSComponent; };

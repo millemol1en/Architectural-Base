@@ -12,43 +12,40 @@ void Mouse::UpdateMousePos()
 {
 }
 
-void Mouse::HandleMouseButtonUp(const SDL_Event& event, TransformedView* _ptr_tvRef)
+void Mouse::HandleMouseButtonUp(const SDL_Event& event)
 {
-    _ptr_tvRef->EndPan(GetMousePos(event));
+    ptr_tvRef->EndPan(GetMousePos(event));
 
     m_isLeftMouseBtnDown = false;
     m_isRightMouseBtnDown = false;
 }
 
-void Mouse::HandleMouseButtonDown(const SDL_Event& event, TransformedView* _ptr_tvRef)
+void Mouse::HandleMouseButtonDown(const SDL_Event& event)
 {
     ISDS* SDSRef = ptr_worldRef->GetCurrSDS();
 
     if (event.button.button == SDL_BUTTON_LEFT)
     {
-        Vec2f screenToWorldMousePos = _ptr_tvRef->ConvertScreenToWorld(GetMousePos(event));
+        Vec2f screenToWorldMousePos = ptr_tvRef->ConvertScreenToWorld(GetMousePos(event));
 
-        Particle* locatedParticle = SDSRef->QueryForSpecificUsingMouse(screenToWorldMousePos);
+        ISpatialEntity* locatedParticle = SDSRef->QueryForSpecificEntityUsingMouse(screenToWorldMousePos);
 
         if (locatedParticle != nullptr)
         {
             ptr_worldRef->SetSelectedEntity(locatedParticle);
             std::cout << "Located Particle has ID :: " << locatedParticle->m_ID << "\n";
         }
-        else
-        {
-            ptr_worldRef->SetSDSComponent(SDSRef->HighlightSDSComponent(screenToWorldMousePos));
-        }
     }
     else if (event.button.button == SDL_BUTTON_RIGHT)
     {
-        _ptr_tvRef->StartPan(GetMousePos(event));
+        ptr_tvRef->StartPan(GetMousePos(event));
     }
 }
 
-void Mouse::HandleMouseMotion(const SDL_Event& event, TransformedView* _ptr_tvRef)
+// []
+void Mouse::HandleMouseMotion(const SDL_Event& event)
 {
-    _ptr_tvRef->UpdatePan(GetMousePos(event));
+    ptr_tvRef->UpdatePan(GetMousePos(event));
 
     m_currMousePos.x = event.motion.x;
     m_currMousePos.y = event.motion.y;
@@ -59,20 +56,19 @@ void Mouse::HandleMouseMotion(const SDL_Event& event, TransformedView* _ptr_tvRe
     m_oldMousePos.y = m_currMousePos.y;
 }
 
-void Mouse::HandleMouseWheel(const SDL_Event& event, TransformedView* _ptr_tvRef)
+void Mouse::HandleMouseWheel(const SDL_Event& event)
 {
     if (GetMouseWheel(event))
     {
-        _ptr_tvRef->ZoomAtScreenPos(1.0109f, GetMousePos(event));
+        ptr_tvRef->ZoomAtScreenPos(1.0109f, GetMousePos(event));
     }
     else
     {
-        _ptr_tvRef->ZoomAtScreenPos(0.9887f, GetMousePos(event));
+        ptr_tvRef->ZoomAtScreenPos(0.9887f, GetMousePos(event));
     }
 }
 
-// Used in conjunction with object moving (Particles) to determine the offset 
-// so as to be able to move the object by that amount.
+// [6] Calculates the offset in the mouse position. Used to calculate the amount of movement:
 Vec2f Mouse::CalculateMouseOffset()
 {
     Vec2f mouseDelta = m_currMousePos - m_oldMousePos;
@@ -101,9 +97,6 @@ Vec2f Mouse::CalculateMouseOffset()
     return mouseOffset;
 }
 
-////////////////
-// PAN & ZOOM //
-////////////////
 Vec2i Mouse::GetMousePos(const SDL_Event& event)
 {
     int x, y;
@@ -112,11 +105,19 @@ Vec2i Mouse::GetMousePos(const SDL_Event& event)
     return { x, y };
 }
 
-// [TODO] For safety reasons change this to use an Enum localized to be within the mouse.
 bool Mouse::GetMouseWheel(const SDL_Event& event)
 {
     if (event.wheel.y > 0)      { return true;  }
     else if (event.wheel.y < 0) { return false; }
     return false;
-    // Create an Option type - kind like in F#, which allows for the possibility of a 3rd return "Nothing" type.
+}
+
+void Mouse::Mouse_SetTVPtr(TransformedView* _tvPtr)
+{
+    ptr_tvRef = _tvPtr;
+}
+
+void Mouse::Mouse_SetWorldPtr(World* _worldPtr)
+{
+    ptr_worldRef = _worldPtr;
 }

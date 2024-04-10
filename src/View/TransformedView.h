@@ -13,7 +13,7 @@
 
 
 
-#include "../Model/Util/Vec2.h"
+#include "../Model/Util/Vec2D.h"
 #include "../Model/Util/BoundingBox.h"
 #include "./Graphics.h"
 #include <cmath>
@@ -72,9 +72,11 @@ public:
 	//	   DRAWING		//
 	//					//
 	//////////////////////
-	void DrawFillCircle(int _x, int _y, int _radius, Uint32 _color);
-	void DrawLine(int _x0, int _y0, int _x1, int _y1, Uint8 thickness, Uint32 _color);
-	void DrawBoundingBox2D(int _minX, int _minY, int _maxX, int _maxY, Uint32 _color);
+	void DrawFillCircle		(const Vec2f& _pos, const float& _radius, Uint32 _color);
+	void DrawLine			(const Vec2f& _p0, const Vec2f& _p1, Uint8 _thickness, Uint32 _color);
+	void DrawBoundingBox2D	(float _minX, float _minY, float _maxX, float _maxY, Uint32 _color);
+	void DrawTriangle		(float _p0, float _p1, float _p2, Uint8 _thickness, Uint32 _color);
+	void DrawBoid			(Vec2f _boidPos, Vec2f _boidDir, Uint32 _color);
 };
 
 #endif 

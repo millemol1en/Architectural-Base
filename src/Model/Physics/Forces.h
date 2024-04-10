@@ -2,8 +2,8 @@
 #ifndef FORCE_H
 #define FORCE_H
 
-#include "../Util/Vec2.h"
-#include "../World/Particle.h"
+#include "../Util/Vec2D.h"
+#include "../World/SpatialEntities/Particles/Particle.h" // [TODO] :: CHANGE TO PARENT TYPE
 
 struct Force
 {
