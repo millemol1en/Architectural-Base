@@ -8,7 +8,6 @@
 #include "./View/TransformedView.h"
 #include "./Model/Constants/CONST_GAME.h"
 #include "./Model/Constants/CONST_SDS_ENTITY_TYPE.h"
-
 #include "./Application/FileHandler.h"
 
 

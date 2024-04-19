@@ -28,11 +28,20 @@ World::~World()
 
 void World::AddEntity()
 {
+    for (int i = 0; i < 100; i++)
+    {
+        Uint32 color = 0xFF665588;
+        Vec2f randPos = RandGen::RandomPositionGenerator(m_worldBoundingBox.m_maxX, m_worldBoundingBox.m_maxY);
 
+        Boid* newBoid = new Boid(randPos.x, randPos.y, color);
 
-    
+        // [TODO] Pack this into an insertion method:
+        m_entities.push_back(newBoid);
+        m_SDS->Insert(newBoid);
+    }
 }
 
+// [TODO] Remove this and make use of a switch-case / if-statement:
 void World::AddParticle()
 {
     // [TESTING / REMOVE LATER]
@@ -42,9 +51,9 @@ void World::AddParticle()
 
     for (int i = 0; i < 100; i++)
     {
-        int randColor = Graphics::RandomColorGenerator();
-        int randRadius = Graphics::RandomRadiusGenerator(12);
-        Vec2f randPos = Graphics::RandomPositionGenerator(m_worldBoundingBox.m_maxX, m_worldBoundingBox.m_maxY);
+        int randColor  = RandGen::RandomColorGenerator();
+        int randRadius = RandGen::RandomRadiusGenerator(12);
+        Vec2f randPos  = RandGen::RandomPositionGenerator(m_worldBoundingBox.m_maxX, m_worldBoundingBox.m_maxY);
 
         Particle* newParticle = new Particle(randRadius, randPos.x, randPos.y, m_itemIDCounter++, randColor);
         m_entities.push_back(newParticle);
@@ -68,74 +77,68 @@ void World::Update(float _dt)
     {
         for (auto& entity : m_entities)
         {
+            ////////////////////TESTING//////////////////////////////////////////////
+            entity->m_bb.m_isOnlyOverlapping = false;
+            entity->m_bb.m_isOnlyContained = false;
+
+            if (entity->m_ID != m_entities[0]->m_ID)
+            {
+                if (m_entities[0]->m_bb.OnlyOverlaps(entity->m_bb))
+                {
+                    m_entities[0]->m_bb.m_isOnlyOverlapping = true;
+                    entity->m_bb.m_isOnlyOverlapping = true;
+                }
+                else if (m_entities[0]->m_bb.OnlyContains(entity->m_bb) || entity->m_bb.OnlyContains(m_entities[0]->m_bb))
+                {
+                    m_entities[0]->m_bb.m_isOnlyContained = true;
+                    entity->m_bb.m_isOnlyContained = true;
+                }
+            }
+            //////////////////////////////////////////////////////////////////////////
+
+
+            std::vector<ISpatialEntity*> neighbours = m_SDS->QueryNearestNeighbour(entity);
+
             switch(entity->GetEntityType())
             {
                 case ENTITY_TYPE::PARTICLE:
-
-                    Particle* particle = (Particle*)entity;
+                {
+                    // [TODO] Clean this up so all of these methods are in particle and "World" only calls 1 methods
+                    Particle* particle = static_cast<Particle*>(entity);
 
                     if (particle->m_ID == 0)
                     {
                         particle->AddVelocityImpulse(pushForce);
                     }
 
-                    particle->m_bb.m_isOnlyOverlapping = false;
-                    particle->m_bb.m_isOnlyContained = false;
-
                     Vec2f friction = Force::GenerateFrictionForce(particle, 4.337 * 50);
                     particle->AddForce(friction);
 
-                    // May only need to be called if they were previously part of the collidingCircles vector list:
-                    particle->Update(_dt);
-                    CheckIfHitBoundary(particle);
+                    // [TODO] Make so that potentially colliding circles are mashed together into a vector, whereby we can handle them from there
+                    particle->Update(_dt, neighbours, m_worldBoundingBox);
 
                     // Core process of re-inserting this into particles back into the SHG
                     m_SDS->Update(particle);
 
-                    // Shift this over to another section
-                    // TESTING!
-                    if (particle->m_ID != m_entities[0]->m_ID)
-                    {
-                        if (m_entities[0]->m_bb.OnlyOverlaps(particle->m_bb))
-                        {
-                            m_entities[0]->m_bb.m_isOnlyOverlapping = true;
-                            particle->m_bb.m_isOnlyOverlapping = true;
-                        }
-                        else if (m_entities[0]->m_bb.OnlyContains(particle->m_bb) || particle->m_bb.OnlyContains(m_entities[0]->m_bb))
-                        {
-                            m_entities[0]->m_bb.m_isOnlyContained = true;
-                            particle->m_bb.m_isOnlyContained = true;
-                        }
-                    }
+                    break;
+                }
+
+                case ENTITY_TYPE::BOID:
+                {
+                    Boid* boid = static_cast<Boid*>(entity);
+
+                    boid->Update(_dt, neighbours, m_worldBoundingBox);
+
+                    m_SDS->Update(boid);
 
                     break;
-
+                }
             }
         }        
     }
 }
 
-void World::CheckIfHitBoundary(Particle* particle)
-{
-    if (particle->m_pos.x - particle->m_radius <= m_worldBoundingBox.m_minX) {
-        particle->m_pos.x = particle->m_radius;
-        particle->m_vel.x *= -0.9;
-    }
-    else if (particle->m_pos.x + particle->m_radius >= m_worldBoundingBox.m_maxX) {
-        particle->m_pos.x = m_worldBoundingBox.m_maxX - particle->m_radius;
-        particle->m_vel.x *= -0.9;
-    }
 
-
-    if (particle->m_pos.y - particle->m_radius <= m_worldBoundingBox.m_minY) {
-        particle->m_pos.y = particle->m_radius;
-        particle->m_vel.y *= -0.9;
-    }
-    else if (particle->m_pos.y + particle->m_radius >= m_worldBoundingBox.m_maxY) {
-        particle->m_pos.y = m_worldBoundingBox.m_maxY - particle->m_radius;
-        particle->m_vel.y *= -0.9;
-    }
-}
 
 void World::HandleCollision()
 {

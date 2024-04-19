@@ -159,6 +159,7 @@
     <ClInclude Include="src\Application\DiscriminatedUnion\Result.h" />
     <ClInclude Include="src\Model\Physics\Forces.h" />
     <ClInclude Include="src\Model\Util\BoundingBox.h" />
+    <ClInclude Include="src\Model\Util\RandGen.h" />
     <ClInclude Include="src\Model\Util\Vec2D.h" />
     <ClInclude Include="src\Model\World\SpatialEntities\Particles\Particle.h" />
     <ClInclude Include="src\Model\World\SpatialEntities\Boids\Boid.h" />
@@ -179,6 +180,7 @@
     <ClCompile Include="src\Controller\Keys.cpp" />
     <ClCompile Include="src\Controller\Mouse.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Model\Constants\CONST_ITERACTION_STATE.h" />
     <ClCompile Include="src\Model\DataStructures\ISpatialDataStructureItem.h" />
     <ClCompile Include="src\Model\DataStructures\SpatialHashGrid\Cell.cpp" />
     <ClCompile Include="src\Model\DataStructures\SpatialHashGrid\SpatialHashGridItem.cpp" />

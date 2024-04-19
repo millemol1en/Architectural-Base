@@ -220,35 +220,6 @@ void Graphics::DrawTexture(int x, int y, int width, int height, float rotation, 
     SDL_RenderCopyEx(m_renderer, texture, NULL, &dstRect, rotationDeg, NULL, SDL_FLIP_NONE);
 }
 
-Uint32 Graphics::RandomColorGenerator()
-{
-    uint8_t r = std::rand() % 255;
-    uint8_t g = std::rand() % 255;
-    uint8_t b = std::rand() % 255;
-    uint8_t a = std::rand() % 255;
-
-    // Order is :: Alpha -> Red -> Green -> Blue
-    Uint32 color = (a << 24) | (r << 16) | (g << 8) | b;
-
-    return color;
-}
-
-int Graphics::RandomRadiusGenerator(int maxRadius)
-{
-    int randRadius = rand() % maxRadius;
-    randRadius = (randRadius < 4) ? 4 : randRadius;
-    return randRadius;
-}
-
-Vec2f Graphics::RandomPositionGenerator(const int width, const int height)
-{
-    float randPosX = std::rand() % width;
-    float randPosY = std::rand() % height;
-
-    return { randPosX, randPosY };
-}
-
-
 void Graphics::RenderFont(std::string _text, Vec2i _pos, Vec2i _dimensions, int _fontSize)
 {
     Fonts::RenderFont(_text, _pos, _dimensions, {255, 255, 255}, _fontSize, m_renderer);

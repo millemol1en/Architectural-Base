@@ -38,11 +38,6 @@ struct Graphics
     static void DrawBoundingBox2D(const BoundingBox2D* bb, const Uint32 color);
     static void RenderText(std::vector<std::pair<SDL_Texture*, SDL_Rect*>> _text);
     static void RenderFont(std::string _text, Vec2i _pos, Vec2i _dimensions, int _fontSize);
-
-    // Move to utility function...
-    static Uint32 RandomColorGenerator();
-    static Vec2f RandomPositionGenerator(const int width = Graphics::i_Width() , const int height = Graphics::i_Height());
-    static int RandomRadiusGenerator(int maxRadius);
 };
 
 #endif

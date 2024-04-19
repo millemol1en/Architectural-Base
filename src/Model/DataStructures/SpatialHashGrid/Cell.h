@@ -21,5 +21,4 @@ struct Cell
 	std::vector<ISpatialEntity*> GetItems();
 };
 
-
 #endif

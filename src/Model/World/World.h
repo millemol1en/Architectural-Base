@@ -4,12 +4,15 @@
 
 #include <vector>
 #include <iostream>
+
 #include "./SpatialEntities/Particles/Particle.h"
+#include "./SpatialEntities/Boids/Boid.h"
 #include "../../View/Graphics.h"
 #include "../DataStructures/ISpatialDataStructure.h"
 #include "../DataStructures/SpatialHashGrid/SpatialHashGrid.h"
 #include "../Constants/CONST_SDS_ENTITY_TYPE.h"
 #include "../Physics/Forces.h"
+#include "../Util/RandGen.h"
 
 // using EntityList = std::vector<ISpatialEntity*>
 using ISDS = ISpatialDataStructure;
@@ -69,18 +72,12 @@ struct World
     //////////////////
     //   PARTICLE   //
     //////////////////
+    // [TODO] Clean this up and divide it into the necessary categories:
     void AddParticle();
     void CheckIfHitBoundary(Particle* _particle);
     void HandleCollision();
     void AddForce(const Vec2f& _force);
     void AddTorque(float _torque);
-
-
-
-    ///////////////////
-    //      BOID     //
-    ///////////////////
-    void AddBoid();
 };
 
 #endif

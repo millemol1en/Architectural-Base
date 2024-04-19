@@ -82,8 +82,8 @@ void Application::Render()
 
                 // [1.3]
                 case ENTITY_TYPE::PARTICLE:
-
-                    Particle* particle = (Particle*)entity;
+                {
+                    Particle* particle = static_cast<Particle*>(entity);
 
                     m_transformedView->DrawFillCircle(particle->m_pos, particle->m_radius, particle->m_color);
 
@@ -106,9 +106,16 @@ void Application::Render()
                     }
 
                     break;
+                }
 
+                case ENTITY_TYPE::BOID:
+                {
+                    Boid* boid = static_cast<Boid*>(entity);
 
+                    m_transformedView->DrawFillCircle(boid->m_pos, 6.0f, boid->m_color);
 
+                    break;
+                }
             }
 
 

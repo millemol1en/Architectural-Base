@@ -21,6 +21,7 @@ std::vector<ISpatialEntity*> Cell::GetItems()
 	return m_entitiesInCell;
 }
 
+// [0] Push back insertion:
 void Cell::Insert(ISpatialEntity* _newSHGItem)
 {
 	_newSHGItem->m_indexPosInCell = m_entitiesInCell.size();
@@ -28,8 +29,7 @@ void Cell::Insert(ISpatialEntity* _newSHGItem)
 	m_entitiesInCell.push_back(_newSHGItem);
 }
 
-// Remove utilizes the good ol'Swap-Pop technique
-// Have to test this further, make sure it doesn't break
+// [1] Swap-Pop removal method - [TESTED? - NO]:
 void Cell::Remove(ISpatialEntity* _remSHGItem)
 {
 	/*auto it = std::find(m_circlesPtr.begin(), m_circlesPtr.end(), remCircle);

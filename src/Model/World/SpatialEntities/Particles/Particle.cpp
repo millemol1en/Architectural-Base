@@ -1,7 +1,10 @@
 #include "./Particle.h"
 
-Particle::Particle(int _radius, float _x, float _y, int _ID, Uint32 _color) : m_mass(1.0), m_friction(0.5), m_restitution(0.5)
+Particle::Particle(int _radius, float _x, float _y, int _ID, Uint32 _color)
 {
+    m_mass          = 1.0;
+    m_friction = 0.5;
+    m_restitution = 0.5;
     m_et            = ENTITY_TYPE::PARTICLE;
     m_color         = _color;
     m_ID            = _ID;
@@ -69,61 +72,16 @@ bool Particle::AreParticlesColliding(const Particle* other) const
 
 // 03. Physics related methods:
 float Particle::GetMomentOfInertia() const          { return 0.5 * (m_radius * m_radius); }
-void  Particle::AddForce(const Vec2f& _force)       { m_sumForces += _force; }
-void  Particle::AddTorque(float _torque)            { m_sumTorque += _torque; }
-void  Particle::ClearForces()                       { m_sumForces = Vec2f(0.0, 0.0); }
-void  Particle::ClearTorque()                       { m_sumTorque = 0.0; }
-void  Particle::AddVelocityImpulse(const Vec2f& j)  { m_vel += j * m_invMass; }
-void  Particle::AddAngularImpulse(const Vec2f& j, const Vec2f& r)
+
+
+void Particle::Update(float _dt, std::vector<ISpatialEntity*> _neighbourEntities, const BoundingBox2D& _worldBB)
 {
-    m_vel += j * m_invMass;
-    m_angularVel += r.CrossProd(j) * m_invI;
-}
-
-// 04. Basic Linear Integration:
-void Particle::LinearIntegration(float _dt)
-{
-    // 04.1: Find the acceleration based on the forces that are being applied and the mass
-    m_acc = m_sumForces * m_invMass;
-
-    // 04.2: Integrate the acceleration to find the new velocity
-    m_vel += m_acc * _dt;
-
-    // 04.3: Integrate the velocity to find the new position
-    Vec2f deltaVel = m_vel * _dt;
-
-    m_pos += deltaVel;
-
-    InitBoundingBox();
-
-    // 04.4: Clear all the forces acting on the object before the next physics step
-    ClearForces();
-}
-
-// 05. Verlet Integration 
-// TODO!!!
-
-// 06. Basic Angular Velocity Integration:
-void Particle::AngularIntegration(float _dt)
-{
-
-    // 06.1: Find the angular acceleration based on the torque that is being applied and the moment of inertia
-    m_angularAcc = m_sumTorque * m_invI;
-
-    // 06.2: Integrate the angular acceleration to find the new angular velocity
-    m_angularVel += m_angularAcc * _dt;
-
-    // 06.3: Integrate the angular velocity to find the new rotation angle
-    m_rotation += m_angularVel * _dt;
-
-    // 06.4: Clear all the torque acting on the object before the next physics step
-    ClearTorque();
-}
-
-void Particle::Update(float _dt)
-{
-    LinearIntegration(_dt);
-    AngularIntegration(_dt);
+    // VerletIntegration(_dt);
+    // AngularVerletIntegration(_dt);
+    EulerIntegration(_dt);
+    AngularEulerIntegration(_dt);
+    HandleBorderCollision(_worldBB);
+    // CheckCollision();
 }
 
 void Particle::UpdateParticle(float _offsetX, float _offsetY)
@@ -148,4 +106,29 @@ void Particle::UpdateBoundingBox(float _offsetX, float _offsetY)
 void Particle::InitBoundingBox()
 {
     m_bb.InitBoundingBox2D(m_radius, m_pos.x, m_pos.y);
+}
+
+void Particle::HandleBorderCollision(const BoundingBox2D& _worldBB)
+{
+    // [0] Left:
+    if (m_pos.x - m_radius <= _worldBB.m_minX) {
+        m_pos.x = m_radius;
+        m_vel.x *= -0.9;
+    }
+    // [1] Right:
+    else if (m_pos.x + m_radius >= _worldBB.m_maxX) {
+        m_pos.x = _worldBB.m_maxX - m_radius;
+        m_vel.x *= -0.9;
+    }
+
+    // [2] Top:
+    if (m_pos.y - m_radius <= _worldBB.m_minY) {
+        m_pos.y = m_radius;
+        m_vel.y *= -0.9;
+    }
+    // [3] Bottom:
+    else if (m_pos.y + m_radius >= _worldBB.m_maxY) {
+        m_pos.y = _worldBB.m_maxY - m_radius;
+        m_vel.y *= -0.9;
+    }
 }

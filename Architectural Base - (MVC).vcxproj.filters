@@ -108,6 +108,9 @@
     <ClInclude Include="src\Model\World\SpatialEntities\Boids\Boid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Model\Util\RandGen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Controller\Controller.cpp">
@@ -168,6 +171,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\World\SpatialEntities\Boids\Boid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Model\Constants\CONST_ITERACTION_STATE.h">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

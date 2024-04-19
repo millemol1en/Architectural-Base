@@ -1,9 +1,20 @@
 #include "SpatialHashGrid.h"
-//////////////////////////
-//						//
-//	   LOCAL METHODS	//
-//						//
-//////////////////////////
+
+
+//////////////////////////////////////
+//									//
+//  SPATIAL HASH GRID USING OFFSET	//
+//									//
+//////////////////////////////////////
+
+
+
+
+//////////////////////////////////////
+//									//
+//	   VANILLA SPATIAL HASH GRID	//
+//									//
+//////////////////////////////////////
 SpatialHashGrid::SpatialHashGrid(BoundingBox2D _dimensions, int _cellSize, int maxNumObj) : m_globalQueryID(-1)
 {
 	gridDimensions = {
@@ -13,11 +24,11 @@ SpatialHashGrid::SpatialHashGrid(BoundingBox2D _dimensions, int _cellSize, int m
 		_dimensions.m_maxY
 	};
 	m_cellSize = _cellSize;
-	m_numRows = std::ceil(_dimensions.m_maxY / _cellSize);
-	m_numCols = std::ceil(_dimensions.m_maxX / _cellSize);
-	m_tableSize = (m_numRows * m_numCols) + 1;
+	m_numRows = std::ceil(_dimensions.m_maxX / _cellSize);
+	m_numCols = std::ceil(_dimensions.m_maxY / _cellSize);
+	m_gridSize = (m_numRows * m_numCols) + 1;
 
-	grid = std::vector<Cell*>(m_tableSize);
+	grid = std::vector<Cell*>(m_gridSize);
 
 	for (int i = 0; i < grid.size(); i++)
 	{
@@ -28,7 +39,7 @@ SpatialHashGrid::SpatialHashGrid(BoundingBox2D _dimensions, int _cellSize, int m
 	std::cout << "   - Grid Dimesnions	:: " << "\n"
 			  << "      - Top Left	 = (" << gridDimensions.m_minX << ", " << gridDimensions.m_minY << "\n"
 			  << "      - Bottom Right = (" << gridDimensions.m_maxX << ", " << gridDimensions.m_maxY << "\n";
-	std::cout << "   - Table Size		:: " << m_tableSize << "\n";
+	std::cout << "   - Table Size		:: " << m_gridSize << "\n";
 	std::cout << "   - Cell Size		:: " << m_cellSize << "\n";
 	std::cout << "   - Num. Cols		:: " << m_numCols << "\n";
 	std::cout << "   - Num. Rows		:: " << m_numRows << "\n";
@@ -117,8 +128,6 @@ void SpatialHashGrid::Insert(ISpatialEntity* _newEntity) const
 
 	Cell* targetCell = grid[indexInGrid];
 	targetCell->Insert(_newEntity);
-
-	if (_newEntity->m_ID == 0) std::cout << "Target Entity inserted into Cell :: " << targetCell->m_cellID << "\n";
 }
 
 
@@ -128,8 +137,6 @@ void SpatialHashGrid::Delete(ISpatialEntity* _targetEntity) const
 
 	Cell* targetCell = grid[storedIndexInGrid];
 	targetCell->Remove(_targetEntity);
-
-	if (_targetEntity->m_ID == 0) std::cout << "Target Entity removed from Cell :: " << targetCell->m_cellID << "\n";
 }
 
 
