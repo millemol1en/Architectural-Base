@@ -1,12 +1,25 @@
 #include "Boid.h"
 
-Boid::Boid(const float _x, const float _y, Uint32 _color, float _maxSpeed)
+Boid::Boid(int _ID, const float _x, const float _y, Uint32 _color, float _maxSpeed)
 {
-	m_pos = { _x, _y };
-	m_mass = 1.0;
-
+	// Inherited:
+	m_ID			= _ID;
+	m_pos			= { _x, _y };
+	m_mass			= 1.0;
+	m_friction		= 0.5;
+	m_restitution	= 0.5;
+	m_rotation		= 0.0;
+	m_angularVel	= 0.0;
+	m_angularAcc	= 0.0;
+	m_invMass		= (m_mass > 0.0) ? 1.0 / m_mass : 0.0;
 	m_color = _color;
 	m_et = ENTITY_TYPE::BOID;
+	m_vel = Vec2f(RandGen::RandValInRange(2.0, 6.0), RandGen::RandValInRange(2.0, 6.0));
+
+	// Local:
+	m_maxForce = 3.0;
+	m_maxSpeed = _maxSpeed;
+
 }
 
 // [1] Alignment 
@@ -14,7 +27,7 @@ Boid::Boid(const float _x, const float _y, Uint32 _color, float _maxSpeed)
 //		-> As such, we calculate the sum velocity of the entire school.
 //		-> Input is an "std::vector" of all the Boids located from performing a Nearest Neighbour query.
 //  
-Vec2f Boid::Alignment(const std::vector<Boid*>& _neighbouringBoids)
+Vec2f Boid::Alignment(const std::vector<ISpatialEntity*>& _neighbouringBoids)
 {
 	if (!_neighbouringBoids.empty())
 	{
@@ -25,7 +38,7 @@ Vec2f Boid::Alignment(const std::vector<Boid*>& _neighbouringBoids)
 		{
 			bool isInRange = Boid::InRange(boid->m_pos);
 
-			if (isInRange)
+			if (true)
 			{
 				sumVel += boid->m_vel;
 				numBoidsInFOV++;
@@ -37,17 +50,18 @@ Vec2f Boid::Alignment(const std::vector<Boid*>& _neighbouringBoids)
 		sumVel.Normalize();
 		sumVel *= m_maxSpeed;
 
-		Vec2f steer;
-		steer = sumVel - m_vel;
-		steer.Clamp(0.1f, 0.1f, m_maxForce, m_maxForce);
-		return steer;
+		return sumVel;
+
+		//Vec2f steer;
+		//steer = sumVel - m_vel;
+		//return steer; // .Clamp(0.1f, 0.1f, m_maxForce, m_maxForce);
 	}
 
 	return Vec2f{};
 }
 
 // [3] Takes all the Boids located from the Nearest Neighbour query and determines whether they are in FOV:
-Vec2f Boid::Cohesion(const std::vector<Boid*>& _neighbouringBoids)
+Vec2f Boid::Cohesion(const std::vector<ISpatialEntity*>& _neighbouringBoids)
 {
 	if (!_neighbouringBoids.empty())
 	{
@@ -59,7 +73,7 @@ Vec2f Boid::Cohesion(const std::vector<Boid*>& _neighbouringBoids)
 		{
 			bool isInRange = Boid::InRange(boid->m_pos);
 
-			if (isInRange)
+			if (true)
 			{
 				avgPos += boid->m_pos;
 				numBoidsInFOV++;
@@ -70,8 +84,11 @@ Vec2f Boid::Cohesion(const std::vector<Boid*>& _neighbouringBoids)
 		desiredVel -= avgPos;
 		desiredVel.Normalize();
 		desiredVel *= m_maxSpeed;
-		m_acc = desiredVel - m_vel;
-		return m_acc.Clamp(0.1f, 0.1f, m_maxForce, m_maxForce);		// [CONSIDERATION] - Currently, the clamp is on all 3 attributes, this may allow for implementation of a primitive evolution system.
+
+		return desiredVel;
+
+		//m_acc = desiredVel - m_vel;
+		//return m_acc; // .Clamp(0.1f, 0.1f, m_maxForce, m_maxForce);
 	}
 
 	return Vec2f{};
@@ -80,7 +97,7 @@ Vec2f Boid::Cohesion(const std::vector<Boid*>& _neighbouringBoids)
 // [3] Separation:
 //		-> This makes the Boids away from others crowding local flockmates
 
-Vec2f Boid::Separation(const std::vector<Boid*>& _neighbouringBoids)
+Vec2f Boid::Separation(const std::vector<ISpatialEntity*>& _neighbouringBoids)
 {
 	if (!_neighbouringBoids.empty())
 	{
@@ -93,13 +110,15 @@ Vec2f Boid::Separation(const std::vector<Boid*>& _neighbouringBoids)
 			float dist = GetDistance(boid->m_pos);
 			if (dist < 1e-2) continue;
 
-			desiredVel += (m_pos - boid->m_pos) / (dist * dist);
+			desiredVel += (m_pos - boid->m_pos) / (dist * dist);	// [TODO] Change this to utilize vector operations
 		}
 		desiredVel /= static_cast<float>(numBoidsInFOV);
 		desiredVel.Normalize();
 		desiredVel *= m_maxSpeed;
-		desiredVel -= m_vel;
-		return m_acc.Clamp(0.1f, 0.1f, m_maxForce, m_maxForce);		// [CONSIDERATION] - Currently, the clamp is on all 3 attributes, this may allow for implementation of a primitive evolution system.
+
+		return desiredVel;
+		//desiredVel -= m_vel;
+		//return m_acc; // .Clamp(0.1f, 0.1f, m_maxForce, m_maxForce);
 	}
 
 	return Vec2f{};
@@ -107,20 +126,26 @@ Vec2f Boid::Separation(const std::vector<Boid*>& _neighbouringBoids)
 
 void Boid::Update(float _dt, std::vector<ISpatialEntity*> _neighbourEntities, const BoundingBox2D& _worldBB)
 {
+	// Flock(_neighbourEntities);
 
-	VerletIntegration(_dt);
-	AngularVerletIntegration(_dt);
+	// AddVelocityImpulse(RandGen::RandomVelocityGenerator(2, 4));
+	EulerIntegration(_dt);
+	AngularEulerIntegration(_dt);
 }
 
-void Boid::Flock(const std::vector<Boid*>& _neighbouringBoids)
+void Boid::Flock(const std::vector<ISpatialEntity*>& _neighbouringBoids)
 {
 	const Vec2f& sep = Separation(_neighbouringBoids);
 	const Vec2f& ali = Alignment(_neighbouringBoids);
 	const Vec2f& coh = Cohesion(_neighbouringBoids);
 
-	AddForce(sep);
-	AddForce(ali);
-	AddForce(coh);
+	std::cout << "Sep Force :: " << sep.ToString() << "\n";
+	std::cout << "Ali Force :: " << ali.ToString() << "\n";
+	std::cout << "Coh Force :: " << coh.ToString() << "\n";
+
+	if (sep > 0.001f) AddVelocityImpulse(sep);
+	if (ali > 0.001f) AddVelocityImpulse(ali);
+	if (coh > 0.001f) AddVelocityImpulse(coh);
 }
 
 void Boid::HandleBorderCollision(const BoundingBox2D& _worldBB)
@@ -146,6 +171,17 @@ float Boid::GetDistance(const Vec2f& _otherV) const
 	float dy = m_pos.y - _otherV.y;
 	
 	return std::sqrt(((dx * dx) + (dy * dy)));
+}
+
+
+//////////////////////////
+//						//
+//	INHERITED METHODS	//
+//						//
+//////////////////////////
+
+void Boid::CalcAABB()
+{
 }
 
 float Boid::GetMomentOfInertia() const

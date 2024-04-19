@@ -33,7 +33,7 @@ void World::AddEntity()
         Uint32 color = 0xFF665588;
         Vec2f randPos = RandGen::RandomPositionGenerator(m_worldBoundingBox.m_maxX, m_worldBoundingBox.m_maxY);
 
-        Boid* newBoid = new Boid(randPos.x, randPos.y, color);
+        Boid* newBoid = new Boid(m_itemIDCounter++, randPos.x, randPos.y, color);
 
         // [TODO] Pack this into an insertion method:
         m_entities.push_back(newBoid);
@@ -97,7 +97,7 @@ void World::Update(float _dt)
             //////////////////////////////////////////////////////////////////////////
 
 
-            std::vector<ISpatialEntity*> neighbours = m_SDS->QueryNearestNeighbour(entity);
+            std::vector<ISpatialEntity*> neighbours = m_SDS->QueryNearestNeighbour(entity); // std::vector<ISpatialEntity*>(); [FOR PARTICLE]
 
             switch(entity->GetEntityType())
             {
@@ -131,10 +131,12 @@ void World::Update(float _dt)
 
                     m_SDS->Update(boid);
 
+                    if (entity->m_ID == 50) shouldUpdate = false;
+
                     break;
                 }
             }
-        }        
+        }  
     }
 }
 

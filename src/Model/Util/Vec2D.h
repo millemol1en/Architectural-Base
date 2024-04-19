@@ -198,7 +198,7 @@ struct Vec2D_Generic
 	// [3] Multiplication:
 	Vec2D_Generic	operator  * (const Vec2D_Generic& _v) const { return Vec2D_Generic((x * _v.x), (y * _v.y));			}
 	Vec2D_Generic	operator  * (const T& _n)			  const { return Vec2D_Generic((x * _n), (y * _n));				}
-	Vec2D_Generic&	operator *= (const T& n)					{ x *= n; y *= n; return *this;							}
+	Vec2D_Generic&	operator *= (const T& _n)					{ x *= _n; y *= _n; return *this;						}
 	
 	// [4] Division:
 	Vec2D_Generic	operator  / (const Vec2D_Generic& _v) const { return Vec2D_Generic((x / _v.x), (y / _v.y));			}
@@ -214,7 +214,7 @@ struct Vec2D_Generic
 	operator Vec2D_Generic<float>()						  const { return Vec2D_Generic<float>(static_cast<float>(x), static_cast<float>(y));	}
 	operator Vec2D_Generic<double>()					  const { return Vec2D_Generic<double>(static_cast<double>(x), static_cast<double>(y));	}
 
-	const std::string ToString() const { return std::string("(") + std::to_string(this->x) + ", " + std::to_string(this->y) + ")"; }	// Tested -> [No!]
+	const std::string ToString() const { return std::string("(") + std::to_string(this->x) + ", " + std::to_string(this->y) + ")"; }	
 
 };
 

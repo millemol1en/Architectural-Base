@@ -16,7 +16,7 @@ Cell::Cell(int _cellID) : m_cellGridIndex(-1), m_entitiesInCell(std::vector<ISpa
 	m_cellID = _cellID;
 }
 
-std::vector<ISpatialEntity*> Cell::GetItems()
+std::vector<ISpatialEntity*> Cell::GetItems() const
 {
 	return m_entitiesInCell;
 }
@@ -32,6 +32,7 @@ void Cell::Insert(ISpatialEntity* _newSHGItem)
 // [1] Swap-Pop removal method - [TESTED? - NO]:
 void Cell::Remove(ISpatialEntity* _remSHGItem)
 {
+	if (m_entitiesInCell.empty()) return;
 	/*auto it = std::find(m_circlesPtr.begin(), m_circlesPtr.end(), remCircle);
 
 	if (it != m_circlesPtr.end())

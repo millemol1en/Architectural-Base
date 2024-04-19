@@ -9,9 +9,17 @@
 
 struct RandGen
 { 
-    static const int RandValInRange(int _min, int _max) 
+    static const int RandValInRange(const int _min, const int _max) 
     {
 	    return std::rand() % (_max + 1 - _min) + _min;
+    }
+
+    static const Vec2f RandomVelocityGenerator(const int _min, const int _max)
+    {
+        float randVelX = std::rand() % (_max + 1 - _min) + _min;
+        float randVelY = std::rand() % (_max + 1 - _min) + _min;
+
+        return { randVelX, randVelY };
     }
     
     static const Vec2f RandomPositionGenerator(const int width, const int height) 

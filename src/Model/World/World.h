@@ -19,6 +19,8 @@ using ISDS = ISpatialDataStructure;
 
 struct World
 {
+    bool shouldUpdate = true;
+
     // [TODO] :: Needs cleanup and sorting of components:
     int m_itemIDCounter;
 	float m_G;
@@ -78,6 +80,8 @@ struct World
     void HandleCollision();
     void AddForce(const Vec2f& _force);
     void AddTorque(float _torque);
+
+
 };
 
 #endif

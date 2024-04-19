@@ -85,6 +85,8 @@ void Application::Render()
                 {
                     Particle* particle = static_cast<Particle*>(entity);
 
+                    // std::cout << "Particle position :: (" << particle->m_pos.x << ", " << particle->m_pos.y << "\n";
+
                     m_transformedView->DrawFillCircle(particle->m_pos, particle->m_radius, particle->m_color);
 
                     if (IsDebugModeActive())

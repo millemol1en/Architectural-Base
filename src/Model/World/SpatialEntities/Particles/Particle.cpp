@@ -3,8 +3,8 @@
 Particle::Particle(int _radius, float _x, float _y, int _ID, Uint32 _color)
 {
     m_mass          = 1.0;
-    m_friction = 0.5;
-    m_restitution = 0.5;
+    m_friction      = 0.5;
+    m_restitution   = 0.5;
     m_et            = ENTITY_TYPE::PARTICLE;
     m_color         = _color;
     m_ID            = _ID;
@@ -81,18 +81,8 @@ void Particle::Update(float _dt, std::vector<ISpatialEntity*> _neighbourEntities
     EulerIntegration(_dt);
     AngularEulerIntegration(_dt);
     HandleBorderCollision(_worldBB);
+    InitBoundingBox();
     // CheckCollision();
-}
-
-void Particle::UpdateParticle(float _offsetX, float _offsetY)
-{
-    m_pos.x += _offsetX;
-    m_pos.y += _offsetY;
-
-    m_pos.x = (m_pos.x < Graphics::f_Width() ? m_pos.x : (m_pos.x < 0) ? 0 : m_pos.x);
-    m_pos.y = (m_pos.y < Graphics::f_Height() ? m_pos.y : (m_pos.y < 0) ? 0 : m_pos.y);
-
-    UpdateBoundingBox(_offsetX, _offsetY);
 }
 
 
@@ -106,6 +96,10 @@ void Particle::UpdateBoundingBox(float _offsetX, float _offsetY)
 void Particle::InitBoundingBox()
 {
     m_bb.InitBoundingBox2D(m_radius, m_pos.x, m_pos.y);
+}
+
+void Particle::CalcAABB()
+{
 }
 
 void Particle::HandleBorderCollision(const BoundingBox2D& _worldBB)

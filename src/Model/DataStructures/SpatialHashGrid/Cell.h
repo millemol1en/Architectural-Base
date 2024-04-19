@@ -18,7 +18,7 @@ struct Cell
 
 	void Insert(ISpatialEntity* _newItem);
 	void Remove(ISpatialEntity* _remItem);
-	std::vector<ISpatialEntity*> GetItems();
+	std::vector<ISpatialEntity*> GetItems() const;
 };
 
 #endif

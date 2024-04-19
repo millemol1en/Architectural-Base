@@ -26,7 +26,6 @@ struct Particle : public ISpatialEntity
 
 
 	void  InitBoundingBox();
-	void  UpdateParticle(float _offsetX, float _offsetY);
 	void  UpdateBoundingBox(float _offsetX, float _offsetY);
 
 	// INHERITED
@@ -34,8 +33,8 @@ struct Particle : public ISpatialEntity
 
 	void  Update(float _dt, std::vector<ISpatialEntity*> _neighbourEntities, const BoundingBox2D& _worldBB) override;
 	float GetMomentOfInertia() const override;
+	void  CalcAABB() override;
 	void  HandleBorderCollision(const BoundingBox2D& _worldBB) override;
-
 
 
 };

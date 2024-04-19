@@ -120,11 +120,16 @@ int SpatialHashGrid::GetGridHeight()
 //////////////////////////
 void SpatialHashGrid::Insert(ISpatialEntity* _newEntity) const
 {
-	const Vec2i particleIndexPos = ConvertPosToIndex(_newEntity->m_pos);
-	const uint32_t indexInGrid = GetGridIndex(particleIndexPos.x, particleIndexPos.y);
+	const Vec2i entityIndexPos = ConvertPosToIndex(_newEntity->m_pos);
+	const uint32_t indexInGrid = GetGridIndex(entityIndexPos.x, entityIndexPos.y);
 
 	_newEntity->m_gridIndex = indexInGrid; // Change name to be more fitting...
 
+	std::cout << "Entity #" << _newEntity->m_ID <<
+		"\n" << "	- Index Pos	 :: " << entityIndexPos.ToString() <<
+		"\n" << "	- Position	 :: " << _newEntity->ToString() <<
+		"\n" << "	- Grid Index :: " << indexInGrid <<
+		"\n";
 
 	Cell* targetCell = grid[indexInGrid];
 	targetCell->Insert(_newEntity);
